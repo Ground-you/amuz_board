@@ -1,80 +1,61 @@
 <template>
-  <div class="p-6 max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">게시글 목록</h1>
-      <Link href="/posts/create" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-        새 글 쓰기
-      </Link>
-    </div>
+  <Layout>
+    <div class="grid gap-8">
+      <div v-if="posts.data.length === 0" class="py-20 text-center bg-white rounded-3xl border border-dashed border-slate-300">
+        <p class="text-slate-400">아직 작성된 글이 없습니다. 첫 번째 주인공이 되어보세요!</p>
+      </div>
 
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <table class="w-full text-left border-collapse">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="p-4 border-b">제목</th>
-            <th class="p-4 border-b">작성자</th>
-            <th class="p-4 border-b">작성일</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="post in posts.data" :key="post.id" class="hover:bg-gray-50 transition">
-            <td class="p-4 border-b">
-              <Link :href="'/posts/' + post.id" class="text-blue-600 font-semibold hover:underline">
+      <div v-for="post in posts.data" :key="post.id" class="group bg-white rounded-3xl border border-slate-100 p-2 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
+        <Link :href="'/posts/' + post.id" class="flex flex-col md:flex-row gap-6">
+          <div v-if="post.image_path" class="md:w-64 h-48 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100">
+            <img :src="'/storage/' + post.image_path" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          </div>
+          <div v-else class="md:w-64 h-48 rounded-2xl bg-slate-50 flex items-center justify-center flex-shrink-0 text-slate-300 italic text-sm">
+            No Image
+          </div>
+
+          <div class="flex-1 py-4 pr-6 flex flex-col justify-between px-4 md:px-0">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-800 mb-2 group-hover:text-emerald-600 transition leading-tight">
                 {{ post.title }}
-              </Link>
-            </td>
-            <td class="p-4 border-b text-gray-600">{{ post.user?.name || '익명' }}</td>
-            <td class="p-4 border-b text-sm text-gray-500">
-              {{ new Date(post.created_at).toLocaleDateString() }}
-            </td>
-          </tr>
-          <tr v-if="posts.data.length === 0">
-            <td colspan="3" class="p-8 text-center text-gray-500">
-              게시글이 없습니다. 첫 글을 남겨보세요!
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </h2>
+              <p class="text-slate-500 line-clamp-2 leading-relaxed mb-4 text-sm">{{ post.content }}</p>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center font-bold text-emerald-700">H</div>
+                <span class="font-semibold text-slate-700">{{ post.user?.name || 'Hwang' }}</span>
+              </div>
+              <span class="text-slate-400 font-medium">{{ new Date(post.created_at).toLocaleDateString() }}</span>
+            </div>
+          </div>
+        </Link>
+      </div>
     </div>
 
-    <div class="mt-8 flex justify-center items-center">
-      <nav class="inline-flex flex-wrap shadow-sm rounded-md -space-x-px" aria-label="Pagination">
-        <template v-for="(link, index) in posts.links" :key="index">
-          
-          <Link 
-            v-if="link.url"
-            :href="link.url"
-            v-html="link.label"
-            class="relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-all duration-200"
-            :class="{
-              'z-10 bg-green-500 border-green-500 text-white': link.active,
-              'bg-white border-gray-300 text-gray-500 hover:bg-gray-50': !link.active,
-              'rounded-l-md': index === 0,
-              'rounded-r-md': index === posts.links.length - 1
-            }"
-          />
-
-          <span 
-            v-else 
-            v-html="link.label" 
-            class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 text-sm font-medium text-gray-300 cursor-not-allowed"
-            :class="{
-              'rounded-l-md': index === 0,
-              'rounded-r-md': index === posts.links.length - 1
-            }"
-          ></span>
-
-        </template>
-      </nav>
+    <div class="mt-16 flex justify-center gap-2">
+      <template v-for="(link, index) in posts.links" :key="index">
+        <Link 
+          v-if="link.url"
+          :href="link.url"
+          v-html="link.label"
+          class="px-5 py-2.5 rounded-2xl text-sm font-bold transition-all border"
+          :class="link.active 
+            ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-200' 
+            : 'bg-white border-slate-100 text-slate-400 hover:bg-slate-50 hover:text-slate-600'"
+        />
+        <span 
+          v-else 
+          v-html="link.label" 
+          class="px-5 py-2.5 rounded-2xl text-sm font-bold text-slate-200 bg-gray-50 border border-slate-50 cursor-not-allowed"
+        ></span>
+      </template>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <script setup>
+import Layout from '@/Layouts/Layout.vue';
 import { Link } from '@inertiajs/vue3';
-
-// 중요: 페이지네이션 적용 시 posts는 Array가 아니라 Object임
-defineProps({
-  posts: Object
-});
+defineProps({ posts: Object });
 </script>
