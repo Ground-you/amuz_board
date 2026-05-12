@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // 작성자 아이디
             $table->string('title'); // 제목
             $table->text('content'); // 내용
-            $table->integer('view_count')->default(0); // 조회수 (Default 0, Not Null)
+            $table->string('image')->nullable(); //사진, NULL가능
+            $table->integer('view_count')->default(0); // 조회수 디폴트 0 
             $table->timestamps(); // create_at, update_at 자동생성
         });
     }

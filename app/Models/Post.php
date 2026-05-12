@@ -2,10 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
+    use HasFactory;
+
+    // DB에 저장 허용할 컬럼들 추가
+    protected $fillable = [
+        'user_id',
+        'title',
+        'content',
+        'image_path',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
