@@ -103,7 +103,7 @@ public function store(Request $request)
         return redirect()->route('posts.index');
     }
     //------------------------------------------------------------
-
+    
     
 
 }

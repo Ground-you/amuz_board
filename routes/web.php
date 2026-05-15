@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LikeController;
 
 // 게시글 목록 페이지
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -24,3 +27,16 @@ Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name
 Route::patch('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
 //댓글 삭제
 Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+// 좋아요 토글 라우트
+Route::post('/likes/{type}/{id}', [LikeController::class, 'toggle'])->middleware('auth');
+
+// 로그인하지 않은 사용자만 접근 (guest 미들웨어)
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
+// 로그인한 사용자만 접근 (auth 미들웨어)
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');

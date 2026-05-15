@@ -1,0 +1,21 @@
+<template>
+  <div class="min-h-screen flex items-center justify-center bg-slate-50 px-6 py-12">
+    <div class="max-w-md w-full bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-white">
+      <h2 class="text-3xl font-black text-slate-900 mb-8 text-center tracking-tighter">Sign Up</h2>
+      <form @submit.prevent="form.post('/register')">
+        <div class="space-y-4">
+          <input v-model="form.name" type="text" placeholder="이름" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+          <input v-model="form.email" type="email" placeholder="이메일" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+          <input v-model="form.password" type="password" placeholder="비밀번호" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+          <input v-model="form.password_confirmation" type="password" placeholder="비밀번호 확인" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+        <button type="submit" class="w-full mt-8 bg-slate-900 text-white p-4 rounded-2xl font-bold hover:bg-emerald-600 transition-all shadow-lg active:scale-95" :disabled="form.processing">가입하기</button>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { useForm } from '@inertiajs/vue3';
+const form = useForm({ name: '', email: '', password: '', password_confirmation: '' });
+</script>

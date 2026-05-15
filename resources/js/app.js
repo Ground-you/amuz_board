@@ -12,7 +12,7 @@ createInertiaApp({
     const page = pages[`./Pages/${name}.vue`]
     
     if (!page) {
-        console.error(`페이지를 찾을 수 없어: ./Pages/${name}.vue`)
+        console.error(`페이지를 못 찾음: ./Pages/${name}.vue`)
     }
 
     // 함수라면 실행해서 결과를 가져오고 아니면 그대로 반환
