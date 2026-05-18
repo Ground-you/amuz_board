@@ -2,35 +2,26 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Contracts\Auth\MustVerifyEmail; // 👈 인증 계약 인터페이스 임포트
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail // 👈 뒤에 implements 추가
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * 사용자가 작성한 게시글들 (1:N 관계)
-     */
-    public function posts()
-    {
-        return $this->hasMany(Post::class);
-    }
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'is_admin',
+    ];
 
-    /**
-     * 사용자가 작성한 댓글들 (1:N 관계)
-     */
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     protected function casts(): array
     {
@@ -40,14 +31,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function likes()
+    public function posts()
     {
-        return $this->morphMany(Like::class, 'likeable');
+        return $this->hasMany(Post::class);
     }
 
-    // 현재 로그인한 사용자가 좋아요를 눌렀는지 확인하는 함수
-    public function isLiked()
+    public function comments()
     {
-        return $this->likes()->where('user_id', auth()->id())->exists();
+        return $this->hasMany(Comment::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }

@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\HandleInertiaRequests; // 👈 배달부 미들웨어 위치 등록
+use App\Http\Middleware\HandleInertiaRequests;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,10 +12,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // ⚠️ 여기에 Inertia 웹 미들웨어 팩을 장착해 주어야 세션 공유가 정상 작동합니다!
+        // 💡 Inertia 기본 미들웨어 등록
         $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);
+
+        // ⭐️ [여기가 핵심!] 인증/인가 실패 시 라라벨이 어디로 보낼지 리다이렉트 경로를 강제로 지정합니다.
+        $middleware->redirectTo(
+            guests: fn () => route('login'),                     // 로그인 안 한 유저는 /login 으로
+            users: fn () => route('verification.notice')        // 이메일 인증 안 한 유저는 이메일 대기창으로!
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

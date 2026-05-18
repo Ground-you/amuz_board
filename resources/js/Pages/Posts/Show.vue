@@ -22,105 +22,133 @@
             {{ post.content }}
           </div>
 
-          <div class="flex justify-between items-center pt-8 border-t border-slate-50">
-            <button @click="toggleLike('post', post.id)" class="flex items-center gap-2 group transition-all" :class="post.is_liked ? 'text-red-500' : 'text-slate-400 hover:text-red-400'">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform group-hover:scale-110" :fill="post.is_liked ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+            <button 
+              @click="toggleLike"
+              class="flex items-center gap-2.5 px-6 py-3 rounded-2xl border font-bold text-sm transition-all active:scale-95 shadow-sm"
+              :class="post.is_liked 
+                ? 'bg-red-50 border-red-200 text-red-600 shadow-red-100' 
+                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/xhtml" 
+                viewBox="0 0 24 24" 
+                :fill="post.is_liked ? 'currentColor' : 'none'" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                class="w-5 h-5 transition-transform duration-300"
+                :class="{ 'scale-125': post.is_liked }"
+              >
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
               </svg>
-              <span class="font-bold">{{ post.likes_count || 0 }}</span>
+              <span>좋아요 {{ post.likes_count || 0 }}</span>
             </button>
 
-            <div class="flex gap-4">
-              <Link :href="`/posts/${post.id}/edit`" class="text-xs font-black text-slate-300 hover:text-amber-500 transition tracking-widest uppercase">수정</Link>
-              <button @click="deletePost" class="text-xs font-black text-slate-300 hover:text-red-500 transition tracking-widest uppercase">삭제</button>
+            <div v-if="$page.props.auth?.user?.id === post.user_id" class="flex items-center gap-3">
+              <Link :href="'/posts/' + post.id + '/edit'" class="px-5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-100 transition">
+                수정
+              </Link>
+              <button @click="deletePost" class="px-5 py-2.5 rounded-xl bg-red-50 border border-red-100 text-sm font-bold text-red-600 hover:bg-red-100 hover:border-red-200 transition">
+                삭제
+              </button>
             </div>
           </div>
         </div>
       </article>
 
       <section class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/40 p-8 md:p-12 border border-white">
-        <h3 class="text-xl font-bold text-slate-900 mb-8 flex items-center gap-3">
-          Comments <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-lg text-sm">{{ post.comments.length }}</span>
+        <h3 class="text-xl font-black text-slate-900 mb-8 tracking-tighter">
+          댓글 <span class="text-emerald-500">{{ post.comments?.length || 0 }}</span>
         </h3>
 
-        <form @submit.prevent="submitComment" class="mb-12">
-          <div class="relative group">
-            <textarea 
-              v-model="commentForm.content" 
-              class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl p-5 pr-16 focus:bg-white focus:border-emerald-500 transition-all outline-none resize-none text-slate-700" 
-              placeholder="댓글 하나정도 달아서 관심을 주세요..!" 
-              rows="3"
-            ></textarea>
-            <button type="submit" class="absolute right-3 bottom-3 bg-slate-900 text-white p-3 rounded-xl hover:bg-emerald-600 transition-all shadow-lg active:scale-95">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-              </svg>
-            </button>
+        <form @submit.prevent="submitComment" class="mb-10">
+          <div class="relative bg-slate-50 rounded-2xl border border-slate-100 p-2 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-transparent transition-all">
+            <textarea v-model="commentForm.content" placeholder="따뜻한 댓글을 남겨주세요." rows="3" class="w-full bg-transparent border-none outline-none resize-none p-4 text-sm text-slate-700 placeholder-slate-400"></textarea>
+            <div class="flex justify-end p-2 border-t border-slate-200/50">
+              <button type="submit" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-600 transition shadow-md shadow-slate-900/10" :disabled="commentForm.processing">등록</button>
+            </div>
           </div>
         </form>
 
-        <div v-for="comment in post.comments.filter(c => !c.parent_id)" :key="comment.id" class="mb-10 last:mb-0">
-          <div class="group">
-            <div class="flex justify-between items-center mb-3">
-              <span class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                {{ comment.user?.name || '익명' }}
-              </span>
-              <div class="flex items-center gap-4 text-[12px] font-black text-slate-300 uppercase tracking-tighter">
-                <button @click="toggleLike('comment', comment.id)" class="flex items-center gap-1 transition-all" :class="comment.is_liked ? 'text-red-500' : 'hover:text-red-400'">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" :fill="comment.is_liked ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                  <span>{{ comment.likes_count || 0 }}</span>
-                </button>  
-                <button @click="openReply(comment.id)" class="hover:text-emerald-500">답장</button>
-                <button @click="editComment(comment)" class="hover:text-amber-500">수정</button>
-                <button @click="deleteComment(comment.id)" class="hover:text-red-500">삭제</button>
+        <div class="space-y-6">
+          <div v-for="comment in post.comments?.filter(c => !c.parent_id)" :key="comment.id" class="border-b border-slate-100 pb-6 last:border-none last:pb-0">
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-bold text-white text-xs">
+                  {{ comment.user?.name?.substring(0,1) || 'U' }}
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-slate-800">{{ comment.user?.name }}</h4>
+                  <span class="text-[11px] font-medium text-slate-400">{{ new Date(comment.created_at).toLocaleDateString() }}</span>
+                </div>
+              </div>
+              
+              <div v-if="$page.props.auth?.user?.id === comment.user_id && editingId !== comment.id" class="flex gap-2 text-xs font-bold text-slate-400">
+                <button @click="editComment(comment)" class="hover:text-slate-600 transition">수정</button>
+                <button @click="deleteComment(comment.id)" class="hover:text-red-500 transition">삭제</button>
               </div>
             </div>
 
-            <div v-if="editingId === comment.id" class="mt-2 pl-4 border-l-2 border-amber-400">
-              <textarea v-model="editForm.content" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm focus:bg-white focus:border-amber-400 outline-none transition-all"></textarea>
-              <div class="flex justify-end gap-2 mt-2">
-                <button @click="editingId = null" class="text-[10px] font-bold text-slate-400">취소</button>
-                <button @click="updateComment(comment.id)" class="bg-amber-500 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold shadow-sm">수정 완료</button>
-              </div>
+            <div v-if="editingId === comment.id" class="mt-2">
+              <form @submit.prevent="updateComment(comment.id)">
+                <textarea v-model="editForm.content" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                <div class="flex gap-2 mt-2 justify-end">
+                  <button type="button" @click="editingId = null" class="px-3 py-1.5 bg-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-300">취소</button>
+                  <button type="submit" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-emerald-600">저장</button>
+                </div>
+              </form>
             </div>
-            <p v-else class="text-slate-600 text-[15px] leading-relaxed pl-4 border-l-2 border-slate-100 group-hover:border-emerald-200 transition-colors">{{ comment.content }}</p>
-          </div>
+            <p v-else class="text-sm text-slate-600 leading-relaxed pl-11 mb-3">{{ comment.content }}</p>
 
-          <div v-if="replyingId === comment.id" class="ml-10 mt-6 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 transition-all">
-            <textarea v-model="replyForm.content" class="w-full bg-white border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="우리 싸우지말고 욕하지마요.."></textarea>
-            <div class="flex justify-end gap-2 mt-3">
-              <button @click="replyingId = null" class="text-[10px] font-bold text-slate-400">취소</button>
-              <button @click="submitReply(comment.id)" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold">답장 등록</button>
-            </div>
-          </div>
-
-          <div v-for="reply in post.comments.filter(c => c.parent_id === comment.id)" :key="reply.id" 
-               class="ml-10 mt-6 p-5 bg-slate-50/50 rounded-3xl border-l-4 border-emerald-500/30 group/reply">
-            <div class="flex justify-between items-center mb-2">
-              <span class="font-bold text-xs text-slate-700">↳ {{ reply.user?.name || '익명' }}</span>
-              <div class="flex items-center gap-3 text-[10px] font-black text-slate-300 uppercase">
-                <button @click="toggleLike('comment', reply.id)" class="flex items-center gap-1 transition-all" :class="reply.is_liked ? 'text-red-500' : 'hover:text-red-400'">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" :fill="reply.is_liked ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                  <span>{{ reply.likes_count || 0 }}</span>
-                </button>
-                <button @click="editComment(reply)" class="hover:text-amber-500 transition-colors">수정</button>
-                <button @click="deleteComment(reply.id)" class="hover:text-red-500 transition-colors">삭제</button>
-              </div>
+            <div v-if="editingId !== comment.id" class="pl-11 mb-4">
+              <button @click="openReply(comment.id)" class="text-xs font-bold text-emerald-600 hover:underline">답글 쓰기</button>
             </div>
 
-            <div v-if="editingId === reply.id" class="mt-2">
-              <textarea v-model="editForm.content" class="w-full bg-white border border-amber-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-400 outline-none"></textarea>
-              <div class="flex justify-end gap-2 mt-2">
-                <button @click="editingId = null" class="text-[9px] font-bold text-slate-400">취소</button>
-                <button @click="updateComment(reply.id)" class="bg-amber-500 text-white px-3 py-1 rounded-lg text-[9px] font-bold">수정 완료</button>
+            <div v-if="replyingId === comment.id" class="pl-11 mb-4">
+              <form @submit.prevent="submitReply(comment.id)">
+                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-transparent transition-all">
+                  <textarea v-model="replyForm.content" placeholder="답글을 입력하세요." rows="2" class="w-full bg-transparent border-none outline-none resize-none p-3 text-sm text-slate-700"></textarea>
+                  <div class="flex justify-end gap-2 p-1 border-t border-slate-200/50">
+                    <button type="button" @click="replyingId = null" class="px-3 py-1.5 bg-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-300">취소</button>
+                    <button type="submit" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-emerald-600">등록</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="pl-11 space-y-4 mt-4 bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50" v-if="post.comments?.filter(r => r.parent_id === comment.id).length > 0">
+              <div v-for="reply in post.comments?.filter(r => r.parent_id === comment.id)" :key="reply.id" class="border-b border-slate-100 last:border-none last:pb-0 pb-4">
+                <div class="flex justify-between items-start mb-2">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-[10px]">
+                      {{ reply.user?.name?.substring(0,1) || 'U' }}
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-slate-700">{{ reply.user?.name }}</h5>
+                      <span class="text-[10px] text-slate-400">{{ new Date(reply.created_at).toLocaleDateString() }}</span>
+                    </div>
+                  </div>
+                  <div v-if="$page.props.auth?.user?.id === reply.user_id && editingId !== reply.id" class="flex gap-2 text-[10px] font-bold text-slate-400">
+                    <button @click="editComment(reply)" class="hover:text-slate-600 transition">수정</button>
+                    <button @click="deleteComment(reply.id)" class="hover:text-red-500 transition">삭제</button>
+                  </div>
+                </div>
+
+                <div v-if="editingId === reply.id">
+                  <form @submit.prevent="updateComment(reply.id)">
+                    <textarea v-model="editForm.content" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    <div class="flex gap-2 mt-2 justify-end">
+                      <button type="button" @click="editingId = null" class="px-2 py-1 bg-slate-200 text-slate-600 text-[10px] font-bold rounded">취소</button>
+                      <button type="submit" class="px-2 py-1 bg-slate-900 text-white text-[10px] font-bold rounded">저장</button>
+                    </div>
+                  </form>
+                </div>
+                <p v-else class="text-xs text-slate-600 leading-relaxed pl-8">{{ reply.content }}</p>
               </div>
             </div>
-            <p v-else class="text-sm text-slate-600 leading-relaxed">{{ reply.content }}</p>
+
           </div>
         </div>
       </section>
@@ -129,42 +157,57 @@
 </template>
 
 <script setup>
-import Layout from '@/Layouts/Layout.vue';
+import Layout from '../../Layouts/Layout.vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({ post: Object });
 
-// 게시글 삭제
-const deletePost = () => { if (confirm('정말 삭제하시겠습니까?')) router.delete('/posts/' + props.post.id); };
+const toggleLike = () => {
+  router.post(`/likes/post/${props.post.id}`, {}, {
+    preserveScroll: true
+  });
+};
 
-// 댓글 관련 로직
+const deletePost = () => { 
+  if (confirm('정말 삭제하시겠습니까?')) router.delete('/posts/' + props.post.id); 
+};
+
 const commentForm = useForm({ content: '', parent_id: null });
-const submitComment = () => { commentForm.post(`/posts/${props.post.id}/comments`, { preserveScroll: true, onSuccess: () => commentForm.reset() }); };
-const deleteComment = (id) => { if (confirm('댓글을 삭제하시겠습니까?')) router.delete('/comments/' + id, { preserveScroll: true }); };
+const submitComment = () => { 
+  commentForm.post(`/posts/${props.post.id}/comments`, { 
+    preserveScroll: true, 
+    onSuccess: () => commentForm.reset() 
+  }); 
+};
+const deleteComment = (id) => { 
+  if (confirm('댓글을 삭제하시겠습니까?')) router.delete('/comments/' + id, { preserveScroll: true }); 
+};
 
-// 수정 관련 로직 (댓글/대댓글 공용)
 const editingId = ref(null);
 const editForm = useForm({ content: '' });
-const editComment = (comment) => { editingId.value = comment.id; editForm.content = comment.content; };
-const updateComment = (id) => { editForm.patch('/comments/' + id, { preserveScroll: true, onSuccess: () => (editingId.value = null) }); };
+const editComment = (comment) => { 
+  editingId.value = comment.id; 
+  editForm.content = comment.content; 
+};
+const updateComment = (id) => { 
+  editForm.patch('/comments/' + id, { 
+    preserveScroll: true, 
+    onSuccess: () => (editingId.value = null) 
+  }); 
+};
 
-// 답글 관련 로직
 const replyingId = ref(null);
 const replyForm = useForm({ content: '', parent_id: null });
-const openReply = (id) => { replyingId.value = id; replyForm.content = ''; };
+const openReply = (id) => { 
+  replyingId.value = id; 
+  replyForm.content = ''; 
+};
 const submitReply = (parentId) => { 
   replyForm.parent_id = parentId; 
   replyForm.post(`/posts/${props.post.id}/comments`, { 
     preserveScroll: true, 
-    onSuccess: () => { replyingId.value = null; replyForm.reset(); } 
+    onSuccess: () => (replyingId.value = null) 
   }); 
-};
-
-// 좋아요 토글 로직
-const toggleLike = (type, id) => {
-  router.post(`/likes/${type}/${id}`, {}, {
-    preserveScroll: true,
-  });
 };
 </script>

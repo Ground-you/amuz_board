@@ -50,11 +50,31 @@ public function store(Request $request)
     return redirect()->route('posts.index');
 }
 
-    public function show(\App\Models\Post $post)
+    public function show(Post $post)
     {
-        // 작성자 정보(user)도 함께 불러와서 전달해줄게.
+        // 1. 이 게시글에 달린 총 좋아요 개수(likes_count)를 자동으로 계산하여 post 객체에 주입합니다.
+        $post->loadCount('likes');
+
+        // 2. 현재 로그인한 유저가 이 글에 좋아요를 누른 상태인지 참/거짓(true/false)을 판별합니다.
+        $post->is_liked = auth()->check() 
+            ? $post->likes()->where('user_id', auth()->id())->exists() 
+            : false;
+
+        // 3. 댓글(comments) 목록에도 각각 좋아요 개수와 로그인 유저의 좋아요 여부를 심어줍니다.
+        $post->load(['user', 'comments.user', 'comments' => function($query) {
+            $query->withCount('likes');
+        }]);
+
+        // 댓글 루프를 돌며 각 댓글을 현재 유저가 좋아요 했는지 마킹합니다.
+        foreach ($post->comments as $comment) {
+            $comment->is_liked = auth()->check()
+                ? $comment->likes()->where('user_id', auth()->id())->exists()
+                : false;
+        }
+
+        // 4. 완성된 특급 배달 데이터를 Inertia 뷰로 전송합니다.
         return Inertia::render('Posts/Show', [
-            'post' => $post->load('user', 'comments.user')
+            'post' => $post
         ]);
     }
     //----------------------------------------------------------

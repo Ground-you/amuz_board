@@ -34,4 +34,8 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'parent_id');
     }
+    public function likes()
+    {
+        return $this->morphMany(\App\Models\Like::class, 'likeable');
+    }
 }

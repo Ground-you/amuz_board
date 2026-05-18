@@ -6,6 +6,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LikeController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // 게시글 목록 페이지
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -40,3 +41,37 @@ Route::middleware('guest')->group(function () {
 
 // 로그인한 사용자만 접근 (auth 미들웨어)
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
+
+// --- [이메일 인증 관련 필수 라우트 고정 주소] ---
+
+// 1. 인증 안내 화면 주소 (라라벨 내장 이름 필수)
+Route::get('/email/verify', [AuthController::class, 'showVerifyEmail'])
+    ->middleware('auth')
+    ->name('verification.notice');
+
+// 2. 사용자가 메일함에서 링크를 클릭했을 때 검증하는 주소
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill(); // 이메일을 인증 완료 상태로 변경
+    return redirect('/posts'); // 완료 후 메인 피드로 이동
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// 3. 인증 메일 재발송 요청 주소 (디바운싱/디토스 방지락 탑재)
+Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
+    ->middleware(['auth', 'throttle:6,1'])
+    ->name('verification.send');
+
+// routes/web.php 내 이메일 인증 안내 화면
+Route::get('/email/verify', [AuthController::class, 'showVerifyEmail'])
+    ->middleware('auth')
+    ->name('verification.notice'); // 👈 이 이름이 위 bootstrap/app.php의 route('verification.notice')와 결합합니다.
+
+
+// --- [인가(Authorization) 미들웨어 자물쇠 적용] ---
+// 기존 라우트 중 'auth' 뒤에 'verified'를 추가해 주면 이메일 인증 안 한 사람은 진입이 자동 차단됩니다.
+
+// 글쓰기 화면 및 저장 보호
+Route::get('/posts/create', [PostController::class, 'create'])->middleware(['auth', 'verified'])->name('posts.create');
+Route::post('/posts', [PostController::class, 'store'])->middleware(['auth', 'verified'])->name('posts.store');
+
+// 좋아요(하트) 토글 기능 보호
+Route::post('/likes/{type}/{id}', [LikeController::class, 'toggle'])->middleware(['auth', 'verified']);
