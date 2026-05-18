@@ -17,5 +17,12 @@
 
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-const form = useForm({ name: '', email: '', password: '', password_confirmation: '' });
+
+// password_confirmation 기본값을 꼭 명시해 주어야 라라벨과 완벽히 호환됩니다!
+const form = useForm({ 
+  name: '', 
+  email: '', 
+  password: '', 
+  password_confirmation: '' 
+});
 </script>
