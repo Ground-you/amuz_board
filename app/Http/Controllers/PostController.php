@@ -89,6 +89,9 @@ class PostController extends Controller
 
     public function update(Request $request, \App\Models\Post $post)
     {
+        if ($post->user_id !== auth()->id()) {
+            abort(403, '본인이 작성한 글만 수정할 수 있습니다.');
+        }
         // 1. 유효성 검사
         $validated = $request->validate([
             'title' => 'required|max:255',
@@ -116,10 +119,18 @@ class PostController extends Controller
 
     public function destroy(\App\Models\Post $post)
     {
-        // 게시글 삭제
+        // $post->user_id : 이 글을 작성한 사람의 고유 번호 (예: 2번)
+        // auth()->id()   : 지금 로그인해서 삭제 버튼을 누른 사람의 고유 번호 (예: 3번)
+        
+        if ($post->user_id !== auth()->id()) {
+            abort(403, '본인이 작성한 글만 삭제할 수 있습니다.');
+        }
+
+        if ($post->image_path) {
+            Storage::disk('public')->delete($post->image_path);
+        }
         $post->delete();
 
-        // 목록 페이지로 이동
         return redirect()->route('posts.index');
     }
     //------------------------------------------------------------

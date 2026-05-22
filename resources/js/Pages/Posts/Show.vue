@@ -6,7 +6,9 @@
           {{ post.title }}
         </h1>
         <div class="flex justify-center items-center gap-4 text-slate-500 text-sm font-medium">
-          <span class="text-slate-900 font-bold underline decoration-emerald-500 underline-offset-4">{{ post.user?.name || 'Hwang Jin-heon' }}</span>
+          <span class="text-slate-900 font-bold underline decoration-emerald-500 underline-offset-4">
+            {{ post.user?.name || 'Hwang Jin-heon' }}
+          </span>
           <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
           <span>{{ new Date(post.created_at).toLocaleDateString() }}</span>
         </div>
@@ -74,6 +76,7 @@
 
         <div class="space-y-6">
           <div v-for="comment in post.comments?.filter(c => !c.parent_id)" :key="comment.id" class="border-b border-slate-100 pb-6 last:border-none last:pb-0">
+            
             <div class="flex justify-between items-start mb-3">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-bold text-white text-xs">
@@ -91,7 +94,7 @@
               </div>
             </div>
 
-            <div v-if="editingId === comment.id" class="mt-2">
+            <div v-if="editingId === comment.id" class="mt-2 pl-11">
               <form @submit.prevent="updateComment(comment.id)">
                 <textarea v-model="editForm.content" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
                 <div class="flex gap-2 mt-2 justify-end">
@@ -120,6 +123,7 @@
 
             <div class="pl-11 space-y-4 mt-4 bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50" v-if="post.comments?.filter(r => r.parent_id === comment.id).length > 0">
               <div v-for="reply in post.comments?.filter(r => r.parent_id === comment.id)" :key="reply.id" class="border-b border-slate-100 last:border-none last:pb-0 pb-4">
+                
                 <div class="flex justify-between items-start mb-2">
                   <div class="flex items-center gap-2">
                     <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-[10px]">
@@ -130,6 +134,7 @@
                       <span class="text-[10px] text-slate-400">{{ new Date(reply.created_at).toLocaleDateString() }}</span>
                     </div>
                   </div>
+
                   <div v-if="$page.props.auth?.user?.id === reply.user_id && editingId !== reply.id" class="flex gap-2 text-[10px] font-bold text-slate-400">
                     <button @click="editComment(reply)" class="hover:text-slate-600 transition">수정</button>
                     <button @click="deleteComment(reply.id)" class="hover:text-red-500 transition">삭제</button>
@@ -180,6 +185,7 @@ const submitComment = () => {
     onSuccess: () => commentForm.reset() 
   }); 
 };
+
 const deleteComment = (id) => { 
   if (confirm('댓글을 삭제하시겠습니까?')) router.delete('/comments/' + id, { preserveScroll: true }); 
 };
@@ -190,6 +196,7 @@ const editComment = (comment) => {
   editingId.value = comment.id; 
   editForm.content = comment.content; 
 };
+
 const updateComment = (id) => { 
   editForm.patch('/comments/' + id, { 
     preserveScroll: true, 
@@ -203,6 +210,7 @@ const openReply = (id) => {
   replyingId.value = id; 
   replyForm.content = ''; 
 };
+
 const submitReply = (parentId) => { 
   replyForm.parent_id = parentId; 
   replyForm.post(`/posts/${props.post.id}/comments`, { 

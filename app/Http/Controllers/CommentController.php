@@ -19,7 +19,7 @@ class CommentController extends Controller
         // 댓글 저장
         // 현재 로그인이 구현 안 되어 있으니 일단 DB에 있는 1번 유저로 저장
         $post->comments()->create([
-            'user_id' => 1, 
+            'user_id' => auth()->id(), 
             'content' => $request->content,
             'parent_id' => $request->parent_id,
         ]);
