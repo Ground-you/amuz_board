@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LikeController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\ProfileController;
 
 // 게시글 목록 페이지
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -41,6 +42,11 @@ Route::middleware('guest')->group(function () {
 
 // 로그인한 사용자만 접근 (auth 미들웨어)
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
+
+// 로그인한 사용자만 접근 | 프로필 수정 창(auth 미들웨어)
+Route::get('/profile', [ProfileController::class, 'edit'])
+    ->middleware(['auth', 'verified'])
+    ->name('profile.edit');
 
 // --- [이메일 인증 관련 필수 라우트 고정 주소] ---
 

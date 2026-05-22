@@ -1,15 +1,16 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Laravel & Inertia 소스 경로 감시 */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.vue'; /* Vue 파일 감시가 누락되어 있다면 추가해 주는 것이 안전합니다 */
 
+/* 폰트와 테마 설정을 하나의 @theme 블록으로 단정하게 통합 */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* 테일윈드 v4에서 기기 설정을 완벽하게 차단하고 class="dark"만 강제 추종하게 만드는 마법의 명령어 */
+@variant dark (&:where(.dark, .dark *));
