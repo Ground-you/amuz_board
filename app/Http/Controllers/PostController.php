@@ -22,33 +22,33 @@ class PostController extends Controller
         return Inertia::render('Posts/Create');
     }
 
-public function store(Request $request)
-{
-    // 1. 유효성 검사
-    $validated = $request->validate([
-        'title' => 'required|max:255',
-        'content' => 'required',
-        'image' => 'nullable|image|max:8192', // 이미지 파일이고 8MB 이하인지 확인
-    ]);
+    public function store(Request $request)
+    {
+        // 1. 유효성 검사
+        $validated = $request->validate([
+            'title' => 'required|max:255',
+            'content' => 'required',
+            'image' => 'nullable|image|max:8192', // 이미지 파일이고 8MB 이하인지 확인
+        ]);
 
-    // 2. 이미지 파일이 있으면 서버에 저장하고 경로 가져오기
-    if ($request->hasFile('image')) {
-        // storage/app/public/posts 폴더에 저장됨
-        $path = $request->file('image')->store('posts', 'public');
-        $validated['image_path'] = $path; // DB에 저장할 경로 추가
+        // 2. 이미지 파일이 있으면 서버에 저장하고 경로 가져오기
+        if ($request->hasFile('image')) {
+            // storage/app/public/posts 폴더에 저장됨
+            $path = $request->file('image')->store('posts', 'public');
+            $validated['image_path'] = $path; // DB에 저장할 경로 추가
+        }
+
+        // 3. DB에 저장 (작성자 ID는 임시로 1)
+        \App\Models\Post::create([
+            'user_id' => auth()->id(), 
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'image_path' => $validated['image_path'] ?? null, // 경로가 없으면 null
+        ]);
+
+        // 4. 저장이 끝나면 목록 페이지로 이동
+        return redirect()->route('posts.index');
     }
-
-    // 3. DB에 저장 (작성자 ID는 임시로 1)
-    \App\Models\Post::create([
-        'user_id' => 1, 
-        'title' => $validated['title'],
-        'content' => $validated['content'],
-        'image_path' => $validated['image_path'] ?? null, // 경로가 없으면 null
-    ]);
-
-    // 4. 저장이 끝나면 목록 페이지로 이동
-    return redirect()->route('posts.index');
-}
 
     public function show(Post $post)
     {

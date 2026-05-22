@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Illuminate\Support\Facades\Auth; // ⚠️ 맨 위에 이 줄이 없다면 꼭 추가해주세요!
+use Illuminate\Support\Facades\Auth; 
 
 class HandleInertiaRequests extends Middleware
 {
@@ -18,7 +18,6 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            // 👈 이 auth 부분을 아래와 같이 완벽하게 매칭시켜 줍니다!
             'auth' => [
                 'user' => $request->user() ? [
                     'id' => $request->user()->id,

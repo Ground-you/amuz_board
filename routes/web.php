@@ -63,7 +63,7 @@ Route::post('/email/verification-notification', [AuthController::class, 'resendV
 // routes/web.php 내 이메일 인증 안내 화면
 Route::get('/email/verify', [AuthController::class, 'showVerifyEmail'])
     ->middleware('auth')
-    ->name('verification.notice'); // 👈 이 이름이 위 bootstrap/app.php의 route('verification.notice')와 결합합니다.
+    ->name('verification.notice');
 
 
 // --- [인가(Authorization) 미들웨어 자물쇠 적용] ---
