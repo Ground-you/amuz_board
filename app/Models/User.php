@@ -14,7 +14,7 @@ class User extends Authenticatable implements MustVerifyEmail // 👈 뒤에 imp
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'password',      
         'is_admin',
     ];
 
@@ -44,5 +44,10 @@ class User extends Authenticatable implements MustVerifyEmail // 👈 뒤에 imp
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function socialAccounts()
+    {
+        return $this->hasMany(SocialAccount::class);
     }
 }

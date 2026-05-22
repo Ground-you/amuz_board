@@ -9,9 +9,16 @@ class ProfileController extends Controller
 {
     public function edit(Request $request)
     {
-        // 현재 가방(Request)에 들어있는 로그인 유저 정보를 Inertia 화면으로 배달합니다.
+        // 1. 현재 로그인한 유저를 가져옵니다.
+        $user = $request->user();
+
+        // 2. 해당 유저가 연동한 소셜 계정의 provider 이름들만 배열로 뽑아냅니다.
+        // 예: ['github', 'google']
+        $linkedAccounts = $user->socialAccounts()->pluck('provider')->toArray();
+
         return Inertia::render('Profile/ProfileEdit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'linkedAccounts' => $linkedAccounts, // 이 부분을 추가해야 합니다!
         ]);
     }
 }

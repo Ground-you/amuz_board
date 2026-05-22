@@ -64,6 +64,7 @@ class AuthController extends Controller
         return back()->withErrors(['email' => '입력하신 정보가 일치하지 않습니다.']);
     }
 
+    //공부
     // 로그아웃
     public function logout(Request $request) {
         Auth::logout();

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\SocialController;
 
 // 게시글 목록 페이지
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
@@ -81,3 +82,12 @@ Route::post('/posts', [PostController::class, 'store'])->middleware(['auth', 've
 
 // 좋아요(하트) 토글 기능 보호
 Route::post('/likes/{type}/{id}', [LikeController::class, 'toggle'])->middleware(['auth', 'verified']);
+
+//연동 헤제 요청
+Route::post('/auth/disconnect/{provider}', [SocialController::class, 'disconnect'])
+    ->middleware('auth')
+    ->name('auth.disconnect');
+
+//연동
+Route::get('/auth/{provider}', [SocialController::class, 'redirectToProvider']);
+Route::get('/auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
