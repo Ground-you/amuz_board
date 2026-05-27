@@ -23,7 +23,7 @@
                 내 프로필
               </Link>
 
-              <Link href="/posts/create" class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-emerald-600 dark:hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-100 dark:shadow-none active:scale-95">
+              <Link href="/posts/create" class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-emerald-600 dark:hover:bg-emerald-500 transition-all">
                 글쓰기
               </Link>
             </div>

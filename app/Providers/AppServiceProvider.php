@@ -3,22 +3,21 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event; // 추가됨!
+use SocialiteProviders\Manager\SocialiteWasCalled; // 추가됨!
+use SocialiteProviders\Naver\NaverExtendSocialite;
+use SocialiteProviders\Google\GoogleExtendSocialite;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        Event::listen(SocialiteWasCalled::class, NaverExtendSocialite::class);
+        Event::listen(SocialiteWasCalled::class, GoogleExtendSocialite::class);
     }
 }

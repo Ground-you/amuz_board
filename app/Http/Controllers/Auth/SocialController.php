@@ -11,14 +11,19 @@ use Laravel\Socialite\Facades\Socialite;
 class SocialController extends Controller
 {
     // 1. 소셜 인증 요청
-    public function redirectToProvider($provider = 'github')
+    public function redirectToProvider($provider)
     {
         return Socialite::driver($provider)->redirect();
     }
 
     // 2. 콜백 처리
-public function handleProviderCallback($provider = 'github')
+public function handleProviderCallback($provider)
     {
+        try {
+            $user = Socialite::driver($provider)->user();
+        } catch (\Exception $e) {
+            dd($e->getMessage()); // 에러 메시지를 화면에 강제로 출력
+        }
         try {
             $socialUser = Socialite::driver($provider)->user();
         } catch (\Exception $e) {

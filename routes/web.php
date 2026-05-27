@@ -58,3 +58,8 @@ Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
     return redirect('/posts');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+//라라벨 라우트 리다이렉트
+Route::get('/', function () {
+    return redirect('/posts');
+});
