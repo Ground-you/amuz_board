@@ -41,11 +41,11 @@ return [
     'redirect' => env('GITHUB_REDIRECT_URL'),
     ],
 
-    'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_REDIRECT'),
-    ],
+    #'google' => [
+    #    'client_id' => env('GOOGLE_CLIENT_ID'),
+    #    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    #    'redirect' => env('GOOGLE_REDIRECT'),
+    #],
     
     'naver' => [
         'client_id' => env('NAVER_CLIENT_ID'),
@@ -53,4 +53,9 @@ return [
         'redirect' => env('NAVER_REDIRECT'),
     ],
 
+    'kakao' => [
+    'client_id' => env('KAKAO_CLIENT_ID'),
+    'client_secret' => env('KAKAO_CLIENT_SECRET'),
+    'redirect' => env('KAKAO_REDIRECT'),
+    ],
 ];

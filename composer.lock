@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e07d69d50fc0d8e023e03a38f7043019",
+    "content-hash": "b6218d476e3b9afe3da107d51e9aa869",
     "packages": [
         {
             "name": "brick/math",
@@ -3854,6 +3854,56 @@
                 "source": "https://github.com/SocialiteProviders/Google-Plus/tree/4.1.0"
             },
             "time": "2020-12-01T23:10:59+00:00"
+        },
+        {
+            "name": "socialiteproviders/kakao",
+            "version": "4.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Kakao.git",
+                "reference": "d962a66bc2930f8a1b7455a6af6c65a7165d6247"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Kakao/zipball/d962a66bc2930f8a1b7455a6af6c65a7165d6247",
+                "reference": "d962a66bc2930f8a1b7455a6af6c65a7165d6247",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.0",
+                "socialiteproviders/manager": "^4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Kakao\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Doojin So",
+                    "email": "sodoojin@gmail.com"
+                }
+            ],
+            "description": "Kakao OAuth2 Provider for Laravel Socialite",
+            "keywords": [
+                "kakao",
+                "laravel",
+                "oauth",
+                "provider",
+                "socialite"
+            ],
+            "support": {
+                "docs": "https://socialiteproviders.com/kakao",
+                "issues": "https://github.com/socialiteproviders/providers/issues",
+                "source": "https://github.com/socialiteproviders/providers"
+            },
+            "time": "2024-04-01T23:43:29+00:00"
         },
         {
             "name": "socialiteproviders/manager",

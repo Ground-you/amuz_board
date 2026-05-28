@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event; // 추가됨!
 use SocialiteProviders\Manager\SocialiteWasCalled; // 추가됨!
 use SocialiteProviders\Naver\NaverExtendSocialite;
 use SocialiteProviders\Google\GoogleExtendSocialite;
+use SocialiteProviders\Kakao\KakaoExtendSocialite;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,5 +20,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Event::listen(SocialiteWasCalled::class, NaverExtendSocialite::class);
         Event::listen(SocialiteWasCalled::class, GoogleExtendSocialite::class);
+        Event::listen(SocialiteWasCalled::class, KakaoExtendSocialite::class);
     }
 }

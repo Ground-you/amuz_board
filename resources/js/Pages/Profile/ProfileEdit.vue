@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 max-w-2xl">
-                    <div v-for="provider in ['google', 'naver', 'github']" :key="provider" 
+                    <div v-for="provider in ['Kakao', 'Naver', 'Github']" :key="provider" 
                          class="flex items-center justify-between p-5 bg-white rounded-2xl border border-slate-200 dark:bg-slate-900 dark:border-slate-800 transition-all duration-300">
                         <div>
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300 capitalize">{{ provider }} 계정</p>
@@ -81,7 +81,7 @@ const props = defineProps({
 const isLinked = (provider) => props.linkedAccounts.includes(provider);
 
 const getProviderColor = (provider) => {
-    const colors = { google: 'bg-red-500 hover:bg-red-700', naver: 'bg-emerald-500 hover:bg-emerald-700', github: 'bg-slate-500 hover:bg-slate-700' };
+    const colors = { Kakao: 'bg-yellow-500 hover:bg-yellow-700', Naver: 'bg-emerald-500 hover:bg-emerald-700', Github: 'bg-slate-500 hover:bg-slate-700' };
     return colors[provider] || 'bg-slate-500';
 };
 

@@ -19,8 +19,8 @@
         </div>
 
         <div class="grid grid-cols-1 gap-3">
-          <a href="/auth/google" class="flex items-center justify-center w-full p-4 bg-white border border-slate-200 rounded-2xl hover:border-red-500 transition-all font-bold text-sm text-slate-600 active:scale-95">
-            구글로 계속하기
+          <a href="/auth/kakao" class="flex items-center justify-center w-full p-4 bg-white border border-slate-200 rounded-2xl hover:border-yellow-500 transition-all font-bold text-sm text-slate-600 active:scale-95">
+            카카오로 계속하기
           </a>
           <a href="/auth/naver" class="flex items-center justify-center w-full p-4 bg-white border border-slate-200 rounded-2xl hover:border-emerald-500 transition-all font-bold text-sm text-slate-600 active:scale-95">
             네이버로 계속하기
