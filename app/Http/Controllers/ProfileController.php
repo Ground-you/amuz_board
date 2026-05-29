@@ -21,4 +21,25 @@ class ProfileController extends Controller
             'linkedAccounts' => $linkedAccounts, // 이 부분을 추가해야 합니다!
         ]);
     }
+
+    public function destroy(Request $request)
+    {
+        // 1. 비밀번호 확인
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        // 2. 로그아웃 처리
+        Auth::logout();
+
+        // 3. 데이터 삭제
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', '계정이 삭제되었습니다.');
+    }
 }

@@ -90,4 +90,21 @@ class AuthController extends Controller
 
         return back()->with('message', '인증 이메일이 재발송되었습니다.');
     }
+
+    public function updateEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users,email,' . auth()->id(),
+        ]);
+
+        $user = auth()->user();
+        $user->email = $request->email;
+        $user->email_verified_at = null; // ★ 핵심: 인증 초기화
+        $user->save();
+
+        // 다시 인증 메일 발송
+        $user->sendEmailVerificationNotification();
+
+        return back()->with('message', '이메일이 변경되었습니다. 인증 메일을 다시 확인해 주세요.');
+    }
 }

@@ -62,6 +62,12 @@
                     로그아웃 하기
                 </button>
             </div>
+            <div class="mt-10 pt-6 border-t border-red-100 dark:border-red-900/50">
+                <button @click="deleteAccount" 
+                        class="w-full sm:w-auto px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 text-sm font-bold rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-all">
+                    계정 삭제하기
+                </button>
+            </div>
         </div>
     </Layout>
 </template>
@@ -109,6 +115,12 @@ const handleAction = (provider) => {
         }
     } else {
         window.location.href = `/auth/${provider}`;
+    }
+};
+
+const deleteAccount = () => {
+    if (confirm('정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 모든 데이터가 영구적으로 삭제됩니다.')) {
+        router.delete('/profile/delete'); // 적절한 삭제 라우트로 연결
     }
 };
 </script>

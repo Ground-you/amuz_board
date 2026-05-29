@@ -39,6 +39,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/auth/disconnect/{provider}', [SocialController::class, 'disconnect'])->name('auth.disconnect');
     
+    // 계정 삭제 추가
+    Route::delete('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+
+  // 로그인 필수, 인증 여부 무관 로그아웃, 이메일 수정 등
+Route::middleware(['auth'])->group(function () {
+    // 이메일 수정 페이지 및 처리
+    Route::patch('/profile/email', [AuthController::class, 'updateEmail'])->name('profile.email.update');
     // 로그아웃
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
