@@ -27,9 +27,11 @@ class ProfileController extends Controller
     public function destroy(Request $request)
     {
         // 1. 비밀번호 확인
+        /*
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
+        */
 
         $user = $request->user();
 
