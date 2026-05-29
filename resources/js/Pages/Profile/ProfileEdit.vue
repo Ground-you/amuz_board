@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 max-w-2xl">
-                    <div v-for="provider in ['Kakao', 'Naver', 'Github']" :key="provider" 
+                    <div v-for="provider in ['kakao', 'naver', 'github']" :key="provider" 
                          class="flex items-center justify-between p-5 bg-white rounded-2xl border border-slate-200 dark:bg-slate-900 dark:border-slate-800 transition-all duration-300">
                         <div>
                             <p class="text-sm font-bold text-slate-700 dark:text-slate-300 capitalize">{{ provider }} 계정</p>
