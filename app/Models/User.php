@@ -51,4 +51,9 @@ class User extends Authenticatable implements MustVerifyEmail // 👈 뒤에 imp
         return $this->hasMany(SocialAccount::class);
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
 }

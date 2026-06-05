@@ -6,6 +6,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\SocialController;
 
 // 1. [누구나 접근 가능] 소셜 로그인 관련 라우트 (미들웨어 밖으로 완전히 분리)
@@ -41,6 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // 계정 삭제 추가
     Route::delete('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // 채팅방 페이지 보여주기
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    // 채팅 메시지 전송하기
+    Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
 });
 
 

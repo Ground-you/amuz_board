@@ -1,5 +1,30 @@
 <template>
   <Layout>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 pb-6 border-b border-slate-100 dark:border-slate-800/60 px-4 md:px-0">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          게시판 목록
+        </h1>
+        <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">이용자들과 실시간으로 소통하고 자유롭게 의견을 나누는 공간입니다.</p>
+      </div>
+      
+      <div class="flex items-center">
+        <Link 
+          href="/chat" 
+          class="inline-flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg shadow-emerald-500/20 dark:shadow-none transform hover:-translate-y-0.5 transition-all duration-300 group"
+        >
+          <span>실시간 대화방 입장</span>
+          
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-200 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-300"></span>
+          </span>
+          
+          <span class="group-hover:rotate-12 transition-transform duration-300">💬</span>
+        </Link>
+      </div>
+    </div>
+
     <div class="grid gap-8">
       <div v-if="posts.data.length === 0" class="py-20 text-center bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800">
         <p class="text-slate-400 dark:text-slate-500">아직 작성된 글이 없습니다. 첫 번째 주인공이 되어보세요!</p>
@@ -57,5 +82,6 @@
 <script setup>
 import Layout from '@/Layouts/Layout.vue';
 import { Link } from '@inertiajs/vue3';
+
 defineProps({ posts: Object });
 </script>
