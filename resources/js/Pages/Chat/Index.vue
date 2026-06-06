@@ -5,7 +5,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 pb-6 border-b border-slate-100 dark:border-slate-800/60">
         <div>
           <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-            실시간 대화방 <span class="text-2xl">💬</span>
+            실시간 대화방 <span class="text-2xl"></span>
           </h1>
           <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">접속 중인 이용자들과 실시간으로 자유롭게 대화하는 공간입니다.</p>
         </div>
@@ -21,12 +21,9 @@
 
       <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800/60 shadow-xl overflow-hidden flex flex-col h-[600px]">
         
-        <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/40 dark:bg-slate-950/20">
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/40 dark:bg-slate-950/20 scroll-smooth">
           
           <div v-if="messages.length === 0" class="h-full flex flex-col items-center justify-center text-center py-20">
-            <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-full flex items-center justify-center text-xl mb-3 animate-bounce">
-              💬
-            </div>
             <p class="text-slate-400 dark:text-slate-500 font-medium text-sm">아직 나눈 대화가 없습니다.</p>
             <p class="text-xs text-slate-300 dark:text-slate-600 mt-1">첫 번째 메시지를 보내 대화를 시작해보세요!</p>
           </div>
@@ -57,7 +54,6 @@
               </span>
             </div>
           </div>
-
         </div>
 
         <div class="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800/60">
@@ -65,28 +61,27 @@
             <input 
               v-model="newMessage"
               type="text" 
-              placeholder="따뜻한 한 마디를 입력해보세요..." 
+              :disabled="sending"
+              placeholder="여기에 전달할 메시지를 입력해주세요..." 
               class="w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 pl-6 pr-20 py-4 rounded-2xl border border-slate-100 dark:border-slate-800/80 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 text-sm transition-all duration-300"
             />
             
             <button 
               type="submit"
-              :disabled="!newMessage.trim()"
+              :disabled="!newMessage.trim() || sending"
               class="absolute right-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:opacity-40 disabled:pointer-events-none text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-emerald-500/10 transition-all duration-300 flex items-center gap-1"
             >
-              <span>전송</span>
-              <span class="text-xs">🚀</span>
+              <span>{{ sending ? '전송 중...' : '전송' }}</span>
             </button>
           </form>
         </div>
-
       </div>
     </div>
   </Layout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import Layout from '@/Layouts/Layout.vue';
 import { router } from '@inertiajs/vue3';
 
@@ -95,9 +90,26 @@ const props = defineProps({
 });
 
 const newMessage = ref('');
+const sending = ref(false); // 중복 전송 방지 상태
+
+// 스크롤을 맨 아래로 내리는 함수
+const scrollToBottom = async () => {
+  await nextTick();
+  const container = document.querySelector('.overflow-y-auto');
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+};
+
+// 메시지 변경 감지하여 스크롤
+watch(() => props.messages, () => {
+  scrollToBottom();
+}, { deep: true });
 
 const sendMessage = () => {
-  if (!newMessage.value.trim()) return;
+  if (!newMessage.value.trim() || sending.value) return;
+  
+  sending.value = true;
   
   router.post('/chat', {
     message: newMessage.value
@@ -105,16 +117,25 @@ const sendMessage = () => {
     preserveScroll: true,
     onSuccess: () => {
       newMessage.value = '';
+      sending.value = false;
+    },
+    onError: () => {
+      sending.value = false;
     }
   });
 };
 
 onMounted(() => {
+  scrollToBottom(); // 첫 로드 시 스크롤
+  
   try {
     if (window.Echo) {
       window.Echo.channel('chat')
-        .listen('.MessageSent', (e) => { // 💡 이벤트 명 앞에 온점(.)을 붙여 네임스페이스 문제를 방지합니다.
-          router.reload({ only: ['messages'] });
+        .listen('.MessageSent', (e) => {
+          router.reload({ 
+            only: ['messages'],
+            onSuccess: () => scrollToBottom() 
+          });
         });
     }
   } catch (error) {
